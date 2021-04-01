@@ -1,0 +1,77 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#color,dimplot
+sort_filled<- RunUMAP(sort_filled, dims = 1:14,seed.use = 42,min.dist = 0.3)
+color<-c("#F8766D","#A6CEE3","#7CAE00","#00BFC4","#C77CFF","#1F7884","#E7298A")
+DimPlot(sort_filled,label = T,cols = color)
+
+```
+```{r}
+#boxplot
+TE_expression<-as.matrix(sort_filled_sub4G@assays$RNA@data)
+repeatslist<-gsub("_","-",repeatslist)
+TE_expression<-TE_expression[rownames(TE_expression) %in% repeatslist,]
+TE_expression<-as.data.frame(t(TE_expression))
+TE_expression$mean<-rowMeans(TE_expression)
+ids<-as.data.frame(sort_filled_sub4G@active.ident)
+identical(rownames(ids),rownames(TE_expression))
+TE_expression<-cbind(TE_expression,ids)
+library(ggplot2)
+library(ggpubr)
+TE_comparsions<-list(c("ES","ES-1"),c("ES-1","ES-2"),c("ES","2C"))
+ggplot(data = TE_expression,aes(x =TE_expression$`sort_filled_sub4G@active.ident`, y = TE_expression$mean)) +geom_boxplot(aes(fill=TE_expression$`sort_filled_sub4G@active.ident`)) + stat_compare_means(comparisons = TE_comparsions) + stat_compare_means(label.y = 1.2,label.x = 2.5)+ theme_bw()
+```
+```{r}
+##ppmarker_boxplot
+PP_expression<-as.matrix(sort_filled_sub4G@assays$RNA@data)
+PPlist<-gsub("_","-",ppmaker$V1)
+PP_expression<-PP_expression[rownames(PP_expression) %in% PPlist,]
+PP_expression<-as.data.frame(t(PP_expression))
+PP_expression$mean<-rowMeans(PP_expression)
+ids<-as.data.frame(sort_filled_sub4G@active.ident)
+identical(rownames(ids),rownames(PP_expression))
+PP_expression<-cbind(PP_expression,ids)
+ggplot(data = PP_expression,aes(x =PP_expression$`sort_filled_sub4G@active.ident`, y = PP_expression$mean)) +geom_boxplot(aes(fill=PP_expression$`sort_filled_sub4G@active.ident`))  + stat_compare_means(comparisons = PP_comparsions)+stat_compare_means(label.y = 1.2,label.x = 2.5)+ theme_bw()
+
+```
+```{r}
+FMmarker<-c("Otx2","Pou3f1","Dnmt3b","Krt18","Dnmt3a","Fgf5","Sox3","Sall","Sox1","Foxd3","Myc","Dido1","Zfhx2","Setd1b","Isy1")
+FM_expression<-as.matrix(sort_filled_sub4G@assays$RNA@data)
+FM_expression<-FM_expression[rownames(FM_expression) %in% FMmarker,]
+FM_expression<-as.data.frame(t(FM_expression))
+FM_expression$mean<-rowMeans(FM_expression)
+ids<-as.data.frame(sort_filled_sub4G@active.ident)
+identical(rownames(ids),rownames(FM_expression))
+FM_expression<-cbind(FM_expression,ids) 
+ggplot(data = FM_expression,aes(x =FM_expression$`sort_filled_sub4G@active.ident`, y = FM_expression$mean)) +geom_boxplot(aes(fill=FM_expression$`sort_filled_sub4G@active.ident`))  +stat_compare_means(comparisons = FM_comparsions)+stat_compare_means(label.y = 1.2,label.x = 2.5)+ theme_bw()
+```
+```{r}
+#C2MARKER
+C2marker<-read.csv(file = "c2marker.csv",header = F)
+
+C2_expression<-as.matrix(sort_filled_sub4G@assays$RNA@data)
+C2_expression<-C2_expression[rownames(C2_expression) %in% C2marker$V1,]
+C2_expression<-as.data.frame(t(C2_expression))
+C2_expression$mean<-rowMeans(C2_expression)
+ids<-as.data.frame(sort_filled_sub4G@active.ident)
+identical(rownames(ids),rownames(C2_expression))
+C2_expression<-cbind(C2_expression,ids) 
+C2_comparsions<-list(c("ES","2C"),c("ES-1","ES-2"))
+ggplot(data = C2_expression,aes(x =C2_expression$`sort_filled_sub4G@active.ident`, y = C2_expression$mean)) +geom_boxplot(aes(fill=C2_expression$`sort_filled_sub4G@active.ident`))  +stat_compare_means(label.y = 1,label.x = 2.5)+ theme_bw()+stat_compare_means(comparisons = C2_comparsions)
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
